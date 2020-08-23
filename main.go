@@ -19,7 +19,9 @@ func main() {
 	}
 	defer config.DB.Close()
 
-	config.DB.AutoMigrate(&entity.User{}, &entity.Project{}, &entity.Plan{})
+	config.DB.AutoMigrate(&entity.User{}, &entity.Project{}, &entity.Plan{}, &entity.Resolution{})
+	config.DB.Model(&entity.Plan{}).AddForeignKey("project_id", "projects(id)", "RESTRICT", "RESTRICT")
+
 	r := routes.SetupRouter()
 	r.Run()
 }

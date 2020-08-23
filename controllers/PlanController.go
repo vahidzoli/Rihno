@@ -1,6 +1,7 @@
 package controllers
 
 import (
+	"Rihno/config"
 	"Rihno/entity"
 	"Rihno/models"
 	"Rihno/request"
@@ -47,6 +48,11 @@ func CreatePlan(c *gin.Context) {
 	Plan.UniqueKey = fmt.Sprintf("%X", b)
 	Plan.Format = planRequest.Format
 	Plan.Codec = planRequest.Codec
+	var records []*entity.Resolution
+	if err := config.DB.Find(&records).Error; err != nil {
+		log.Fatalln(err)
+	}
+	Plan.Resolutions = records
 	id := c.Params.ByName("id")
 	var project entity.Project
 	err := models.GetProjectByID(&project, id, c)
@@ -107,7 +113,10 @@ func UpdatePlan(c *gin.Context) {
 		c.JSON(http.StatusNotFound, gin.H{"message": "Plan Not Found!"})
 		return
 	}
-	c.BindJSON(&plan)
+	var resolutions []*entity.Resolution
+	config.DB.Where("id in (?)", planUpdateRequest.Resolutions).Find(&resolutions)
+	config.DB.Model(&plan).Association("Resolutions").Clear()
+	plan.Resolutions = resolutions
 	err3 := models.UpdatePlan(&plan, planUpdateRequest)
 	if err3 != nil {
 		c.JSON(http.StatusInternalServerError, "Something Went Wrong... :(")

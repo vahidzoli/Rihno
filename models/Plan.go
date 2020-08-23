@@ -8,7 +8,7 @@ import (
 )
 
 func GetAllPlans(Plan *[]entity.Plan, project entity.Project) (err error) {
-	if err = config.DB.Where("project_id = ?",project.Id).Find(Plan).Error; err != nil {
+	if err = config.DB.Where("project_id = ?", project.Id).Find(Plan).Error; err != nil {
 		return err
 	}
 	return nil
@@ -24,7 +24,9 @@ func CreatePlan(Plan *entity.Plan) (err error) {
 
 //GetPlanByID ... Fetch only one Plan by Id
 func GetPlanByID(Plan *entity.Plan, id string, project entity.Project) (err error) {
-	if err = config.DB.Where("id = ?", id).Where("project_id = ?", project.Id).First(Plan).Error; err != nil {
+	if err = config.DB.Where("id = ? and project_id= ?", id, project.Id).
+		Preload("Resolutions").
+		First(Plan).Error; err != nil {
 		return err
 	}
 	return nil

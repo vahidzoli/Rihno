@@ -38,6 +38,8 @@ func SetupRouter() *gin.Engine {
 			grp3.GET("project/:id/plan/:pid", controllers.GetPlanByID)
 			grp3.PATCH("project/:id/plan/:pid", controllers.UpdatePlan)
 			grp3.DELETE("project/:id/plan/:pid", controllers.DeletePlan)
+
+			grp3.GET("project/:id/resolutions", controllers.GetResolutions)
 		}
 	}
 	return r
